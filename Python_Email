@@ -1,0 +1,36 @@
+import win32com.client as win32
+
+olApp = win32.Dispatch('Outlook.Application')
+olNS = olApp.GetNameSpace('MAPI')
+
+# construct email item object
+mailItem = olApp.CreateItem(0)
+mailItem.Subject = 'Hello 123'
+mailItem.BodyFormat = 1
+mailItem.Body = 'Hello There'
+mailItem.To = '<ob@timevat.com>'
+mailItem.Cc = '<vl@timevat.con>'
+mailItem.Bcc = '<vl@timevat.con>'
+mailItem.Sensitivity  = 2
+
+choice = input("Do you want to save, display or send?")
+
+if choice.lower() == "display":  
+  print("Display")
+  mailItem.Display()
+
+elif choice.lower() == "save":
+  print("Save")
+  mailItem.Save()
+
+elif choice.lower() == "send":
+  print("Send")
+  mailItem.Send()
+
+else:
+  print("Invalid choice")
+
+
+# mailItem.Display()
+# mailItem.Save()
+# mailItem.Send()
