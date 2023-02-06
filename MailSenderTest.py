@@ -1,23 +1,32 @@
 import os
 import win32com.client as win32
+import logging
+import pandas as pd
+
+
+# set up logging
+logging.basicConfig(filename='email_script.log', level=logging.DEBUG)
 
 # construct Outlook application instance
-
 olApp = win32.Dispatch('Outlook.Application')
 olNS = olApp.GetNameSpace('MAPI')
 
-User = input("which user are running this script? ")
+df = pd.read_excel("clients.xlsx")
+
+
+# constants
+SUBJECT = "Tolddeklarationsoversigt {} ({})"
+ATTACHMENT_NAME = "{} Tolddeklarationsoversigt.pdf"
+ROOT_DIR = "C:\\Users\\Oliver\\Desktop\\\\TIMEVAT A S\\Kommunikationswebsted - TIMEVAT\\Operation"
+BODY = "Template2"
+
+#User = input("which user are running this script? ")
 period = input("what is the period 'yyyy MM'?" )
-customer = input("which customer do you want to send for?")
+customer = input("VAT nr. for the customer you want to send to?")
 
-data = {
-    'Reipurth Dentalservice': {'email': '<sl@timevat.com>', 'path': 'C:\\Users\\'+ User +'\\TIMEVAT A S\\Kommunikationswebsted - TIMEVAT\\Operation\\Reipurth Dentalservice'},
-    'Soft Sales': {'email': 'ob@timevat.com', 'path': 'C:\\Users\\'+ User +'\\TIMEVAT A S\\Kommunikationswebsted - TIMEVAT\Operation\\Soft Sales'},
-    'Skall Studio': {'email': 'vl@timevat.com', 'path': 'C:\\Users\\'+ User +'\\TIMEVAT A S\\Kommunikationswebsted - TIMEVAT\Operation\\Skall Studio ApS'}
-}
-
-pathToCustomerFolder = data[customer]['path']
-mailForCustomer = data[customer]['email']
+pathToCustomerFolder = df.loc[df['VAT'] == customer, 'Folder'].values[0] 
+nameToCustomer = df.loc[df['VAT'] == customer, 'Name'].values[0]
+mailForCustomer = df.loc[df['VAT'] == customer, 'Email_to'].values[0]
 
 def find_path(name, path):
     for root, dirs, files in os.walk(path):
@@ -45,6 +54,7 @@ mailItem.BodyFormat = 1
 mailItem.Body = "Hello World"
 mailItem.To = (mailForCustomer)
 mailItem.Attachments.Add(attachment)
+#mailItem.CC = input()
 
 
 
